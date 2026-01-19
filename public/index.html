@@ -9,57 +9,86 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f5f7fa;
       min-height: 100vh;
-      padding: 20px;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    header {
-      text-align: center;
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      margin-bottom: 30px;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    header h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
+    .header h1 {
+      font-size: 1.5rem;
     }
 
-    header p {
+    .header-subtitle {
       opacity: 0.9;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
     }
 
-    .card {
+    .admin-link {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 8px 15px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .admin-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    /* Main Layout */
+    .main-container {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 0;
+      height: calc(100vh - 80px);
+    }
+
+    @media (max-width: 900px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    /* Left Panel - Form */
+    .left-panel {
       background: white;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-right: 1px solid #e0e0e0;
+      overflow-y: auto;
     }
 
-    .card h2 {
+    .left-panel h2 {
       color: #333;
       margin-bottom: 20px;
-      font-size: 1.3rem;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 10px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: 500;
       color: #555;
+      font-size: 0.9rem;
     }
 
     .form-group input,
@@ -68,7 +97,7 @@
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: border-color 0.2s;
     }
 
@@ -79,7 +108,7 @@
     }
 
     .form-group textarea {
-      min-height: 100px;
+      min-height: 120px;
       resize: vertical;
     }
 
@@ -87,11 +116,12 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      padding: 12px 30px;
+      padding: 14px 28px;
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
     }
 
     .btn:hover {
@@ -112,42 +142,150 @@
       border-radius: 8px;
       margin-bottom: 15px;
       display: none;
+      font-size: 0.9rem;
     }
 
+    /* Right Panel - FAQ */
+    .right-panel {
+      background: #f5f7fa;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .right-panel h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .refresh-indicator {
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      background: #28a745;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      border-color: #667eea;
+    }
+
+    .tab.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .tab .count {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 5px;
+      font-size: 0.8rem;
+    }
+
+    .tab.active .count {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* FAQ Items */
     .faq-list {
       list-style: none;
     }
 
     .faq-item {
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
+      background: white;
+      border-radius: 10px;
       margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       overflow: hidden;
+      border-left: 4px solid #28a745;
+    }
+
+    .faq-item.pending {
+      border-left-color: #ffc107;
     }
 
     .faq-question {
-      background: #f8f9fa;
-      padding: 15px 20px;
+      padding: 18px 20px;
       font-weight: 600;
       color: #333;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background 0.2s;
     }
 
     .faq-question:hover {
-      background: #e9ecef;
+      background: #f8f9fa;
     }
 
-    .faq-question::after {
-      content: '+';
+    .faq-question-text {
+      flex: 1;
+      padding-right: 15px;
+    }
+
+    .faq-status {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .status-answered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .faq-toggle {
       font-size: 1.5rem;
       color: #667eea;
       transition: transform 0.3s;
+      margin-left: 10px;
     }
 
-    .faq-item.open .faq-question::after {
+    .faq-item.open .faq-toggle {
       transform: rotate(45deg);
     }
 
@@ -156,7 +294,7 @@
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.3s, padding 0.3s;
-      background: white;
+      background: #f8f9fa;
     }
 
     .faq-item.open .faq-answer {
@@ -166,18 +304,25 @@
 
     .faq-answer p {
       color: #555;
-      line-height: 1.6;
+      line-height: 1.7;
+    }
+
+    .faq-answer.pending-msg {
+      color: #856404;
+      font-style: italic;
     }
 
     .faq-meta {
       font-size: 0.8rem;
       color: #999;
-      margin-top: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e0e0e0;
     }
 
     .empty-state {
       text-align: center;
-      padding: 40px;
+      padding: 60px 20px;
       color: #888;
     }
 
@@ -185,110 +330,187 @@
       width: 80px;
       height: 80px;
       margin-bottom: 15px;
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
-    .admin-link {
-      text-align: center;
-      margin-top: 20px;
+    .empty-state p {
+      font-size: 0.95rem;
     }
 
-    .admin-link a {
-      color: rgba(255,255,255,0.7);
-      text-decoration: none;
-      font-size: 0.9rem;
+    /* Info box */
+    .info-box {
+      background: #e8f4fd;
+      border: 1px solid #b8daff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: #004085;
     }
 
-    .admin-link a:hover {
-      color: white;
-    }
-
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.5rem; }
-      .card { padding: 20px; }
+    .info-box strong {
+      display: block;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  <!-- Header -->
+  <header class="header">
+    <div>
       <h1>FAQ - Facturation Électronique</h1>
-      <p>Plateformes Agréées & Réforme de la Facture Électronique en France</p>
-    </header>
+      <div class="header-subtitle">Plateformes Agréées & Réforme de la Facture Électronique</div>
+    </div>
+    <a href="/admin.html" class="admin-link">Administration</a>
+  </header>
 
-    <!-- Question Form -->
-    <div class="card">
-      <h2>Poser une question</h2>
-      <div class="success-message" id="successMessage">
-        Votre question a été envoyée avec succès ! Vous trouverez la réponse sur cette page prochainement.
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Left Panel - Question Form -->
+    <div class="left-panel">
+      <h2>
+        <span>Poser une question</span>
+      </h2>
+
+      <div class="info-box">
+        <strong>Comment ça marche ?</strong>
+        Posez votre question ci-dessous. Un expert vous répondra et la réponse apparaîtra dans le tableau à droite.
       </div>
+
+      <div class="success-message" id="successMessage">
+        Votre question a été envoyée ! Elle apparaît maintenant dans "En attente" et sera bientôt traitée.
+      </div>
+
       <form id="questionForm">
         <div class="form-group">
           <label for="name">Votre nom (optionnel)</label>
           <input type="text" id="name" name="name" placeholder="Jean Dupont">
         </div>
         <div class="form-group">
-          <label for="email">Votre email (optionnel, pour être notifié)</label>
+          <label for="email">Votre email (optionnel)</label>
           <input type="email" id="email" name="email" placeholder="jean@exemple.fr">
         </div>
         <div class="form-group">
           <label for="question">Votre question *</label>
-          <textarea id="question" name="question" placeholder="Posez votre question sur la facturation électronique, les plateformes agréées, la réforme..." required></textarea>
+          <textarea id="question" name="question" placeholder="Posez votre question sur la facturation électronique, les plateformes agréées, la réforme 2026..." required></textarea>
         </div>
         <button type="submit" class="btn" id="submitBtn">Envoyer ma question</button>
       </form>
     </div>
 
-    <!-- FAQ List -->
-    <div class="card">
-      <h2>Questions & Réponses</h2>
+    <!-- Right Panel - FAQ List -->
+    <div class="right-panel">
+      <h2>
+        <span>Questions & Réponses</span>
+        <span class="refresh-indicator">
+          <span class="refresh-dot"></span>
+          Mise à jour auto
+        </span>
+      </h2>
+
+      <div class="tabs">
+        <button class="tab active" onclick="filterQuestions('all')" data-filter="all">
+          Toutes<span class="count" id="countAll">0</span>
+        </button>
+        <button class="tab" onclick="filterQuestions('answered')" data-filter="answered">
+          Répondues<span class="count" id="countAnswered">0</span>
+        </button>
+        <button class="tab" onclick="filterQuestions('pending')" data-filter="pending">
+          En attente<span class="count" id="countPending">0</span>
+        </button>
+      </div>
+
       <div id="faqList">
         <div class="empty-state">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p>Aucune question n'a encore été répondue.<br>Soyez le premier à poser une question !</p>
+          <p>Chargement des questions...</p>
         </div>
       </div>
-    </div>
-
-    <div class="admin-link">
-      <a href="/admin.html">Accès administrateur</a>
     </div>
   </div>
 
   <script>
     const API_URL = '';
+    let allQuestions = [];
+    let currentFilter = 'all';
 
-    // Load FAQ
+    // Load all questions (answered + pending for public view)
     async function loadFAQ() {
       try {
-        const response = await fetch(`${API_URL}/api/questions`);
+        const response = await fetch(`${API_URL}/api/questions/all`);
         const questions = await response.json();
 
-        const faqList = document.getElementById('faqList');
-
-        if (questions.length === 0) {
-          return;
-        }
-
-        faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => `
-          <li class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-              <span>${escapeHtml(q.question)}</span>
-            </div>
-            <div class="faq-answer">
-              <p>${escapeHtml(q.answer)}</p>
-              <div class="faq-meta">
-                Posé par ${escapeHtml(q.name || 'Anonyme')} -
-                Répondu le ${new Date(q.answeredAt).toLocaleDateString('fr-FR')}
-              </div>
-            </div>
-          </li>
-        `).join('') + '</ul>';
+        allQuestions = questions;
+        updateCounts();
+        renderQuestions();
       } catch (error) {
         console.error('Error loading FAQ:', error);
       }
+    }
+
+    function updateCounts() {
+      const answered = allQuestions.filter(q => q.status === 'answered').length;
+      const pending = allQuestions.filter(q => q.status === 'pending').length;
+
+      document.getElementById('countAll').textContent = allQuestions.length;
+      document.getElementById('countAnswered').textContent = answered;
+      document.getElementById('countPending').textContent = pending;
+    }
+
+    function filterQuestions(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+      renderQuestions();
+    }
+
+    function renderQuestions() {
+      let questions = allQuestions;
+
+      if (currentFilter !== 'all') {
+        questions = allQuestions.filter(q => q.status === currentFilter);
+      }
+
+      const faqList = document.getElementById('faqList');
+
+      if (questions.length === 0) {
+        faqList.innerHTML = `
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>${currentFilter === 'pending' ? 'Aucune question en attente' : currentFilter === 'answered' ? 'Aucune question répondue' : 'Aucune question pour le moment'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => `
+        <li class="faq-item ${q.status}">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span class="faq-question-text">${escapeHtml(q.question)}</span>
+            <span class="faq-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
+              ${q.status === 'answered' ? 'Répondue' : 'En attente'}
+            </span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer ${q.status === 'pending' ? 'pending-msg' : ''}">
+            ${q.status === 'answered'
+              ? `<p>${escapeHtml(q.answer)}</p>
+                 <div class="faq-meta">
+                   Posé par ${escapeHtml(q.name || 'Anonyme')} -
+                   Répondu le ${new Date(q.answeredAt).toLocaleDateString('fr-FR')}
+                 </div>`
+              : `<p>Cette question est en cours de traitement. La réponse apparaîtra ici automatiquement.</p>
+                 <div class="faq-meta">
+                   Posé par ${escapeHtml(q.name || 'Anonyme')} le ${new Date(q.createdAt).toLocaleDateString('fr-FR')}
+                 </div>`
+            }
+          </div>
+        </li>
+      `).join('') + '</ul>';
     }
 
     function toggleFAQ(element) {
@@ -296,6 +518,7 @@
     }
 
     function escapeHtml(text) {
+      if (!text) return '';
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
@@ -325,6 +548,13 @@
         if (response.ok) {
           document.getElementById('successMessage').style.display = 'block';
           document.getElementById('questionForm').reset();
+
+          // Reload FAQ to show the new pending question
+          setTimeout(() => {
+            loadFAQ();
+            filterQuestions('pending');
+          }, 500);
+
           setTimeout(() => {
             document.getElementById('successMessage').style.display = 'none';
           }, 5000);
@@ -340,8 +570,11 @@
       submitBtn.textContent = 'Envoyer ma question';
     });
 
-    // Load FAQ on page load
+    // Initial load
     loadFAQ();
+
+    // Auto-refresh every 10 seconds
+    setInterval(loadFAQ, 10000);
   </script>
 </body>
 </html>

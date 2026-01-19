@@ -58,6 +58,23 @@ app.get('/api/questions', async (req, res) => {
   }
 });
 
+// Get ALL questions - both pending and answered (public - for real-time board)
+app.get('/api/questions/all', async (req, res) => {
+  try {
+    const snapshot = await questionsCollection.orderBy('createdAt', 'desc').get();
+
+    const questions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.json(questions);
+  } catch (error) {
+    console.error('Error fetching all questions:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des questions' });
+  }
+});
+
 // Submit a new question (public)
 app.post('/api/questions', async (req, res) => {
   try {
@@ -176,6 +193,68 @@ app.post('/api/admin/verify', (req, res) => {
     res.json({ valid: true });
   } else {
     res.status(401).json({ valid: false });
+  }
+});
+
+// ========== EXPORT API ==========
+
+// Export all data as JSON (admin only)
+app.get('/api/admin/export', adminAuth, async (req, res) => {
+  try {
+    const snapshot = await questionsCollection.orderBy('createdAt', 'desc').get();
+    const questions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=faq-export-${new Date().toISOString().split('T')[0]}.json`);
+    res.json({
+      exportDate: new Date().toISOString(),
+      totalQuestions: questions.length,
+      answeredCount: questions.filter(q => q.status === 'answered').length,
+      pendingCount: questions.filter(q => q.status === 'pending').length,
+      questions: questions
+    });
+  } catch (error) {
+    console.error('Error exporting data:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'export' });
+  }
+});
+
+// Export as CSV (admin only)
+app.get('/api/admin/export/csv', adminAuth, async (req, res) => {
+  try {
+    const snapshot = await questionsCollection.orderBy('createdAt', 'desc').get();
+    const questions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // CSV Header
+    let csv = 'ID,Nom,Email,Question,Statut,Date Question,Réponse,Date Réponse\n';
+
+    // CSV Rows
+    questions.forEach(q => {
+      const row = [
+        q.id,
+        `"${(q.name || '').replace(/"/g, '""')}"`,
+        `"${(q.email || '').replace(/"/g, '""')}"`,
+        `"${(q.question || '').replace(/"/g, '""')}"`,
+        q.status,
+        q.createdAt || '',
+        `"${(q.answer || '').replace(/"/g, '""')}"`,
+        q.answeredAt || ''
+      ];
+      csv += row.join(',') + '\n';
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=faq-export-${new Date().toISOString().split('T')[0]}.csv`);
+    res.send('\uFEFF' + csv); // BOM for Excel compatibility
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'export CSV' });
   }
 });
 
