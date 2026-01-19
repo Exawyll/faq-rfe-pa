@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Facturation Électronique & Plateformes Agréées</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .faq-list {
+      list-style: none;
+    }
+
+    .faq-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      background: #f8f9fa;
+      padding: 15px 20px;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-question:hover {
+      background: #e9ecef;
+    }
+
+    .faq-question::after {
+      content: '+';
+      font-size: 1.5rem;
+      color: #667eea;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-question::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s, padding 0.3s;
+      background: white;
+    }
+
+    .faq-item.open .faq-answer {
+      padding: 20px;
+      max-height: 500px;
+    }
+
+    .faq-answer p {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .faq-meta {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .admin-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .admin-link a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .admin-link a:hover {
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>FAQ - Facturation Électronique</h1>
+      <p>Plateformes Agréées & Réforme de la Facture Électronique en France</p>
+    </header>
+
+    <!-- Question Form -->
+    <div class="card">
+      <h2>Poser une question</h2>
+      <div class="success-message" id="successMessage">
+        Votre question a été envoyée avec succès ! Vous trouverez la réponse sur cette page prochainement.
+      </div>
+      <form id="questionForm">
+        <div class="form-group">
+          <label for="name">Votre nom (optionnel)</label>
+          <input type="text" id="name" name="name" placeholder="Jean Dupont">
+        </div>
+        <div class="form-group">
+          <label for="email">Votre email (optionnel, pour être notifié)</label>
+          <input type="email" id="email" name="email" placeholder="jean@exemple.fr">
+        </div>
+        <div class="form-group">
+          <label for="question">Votre question *</label>
+          <textarea id="question" name="question" placeholder="Posez votre question sur la facturation électronique, les plateformes agréées, la réforme..." required></textarea>
+        </div>
+        <button type="submit" class="btn" id="submitBtn">Envoyer ma question</button>
+      </form>
+    </div>
+
+    <!-- FAQ List -->
+    <div class="card">
+      <h2>Questions & Réponses</h2>
+      <div id="faqList">
+        <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>Aucune question n'a encore été répondue.<br>Soyez le premier à poser une question !</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-link">
+      <a href="/admin.html">Accès administrateur</a>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '';
+
+    // Load FAQ
+    async function loadFAQ() {
+      try {
+        const response = await fetch(`${API_URL}/api/questions`);
+        const questions = await response.json();
+
+        const faqList = document.getElementById('faqList');
+
+        if (questions.length === 0) {
+          return;
+        }
+
+        faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => `
+          <li class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>${escapeHtml(q.question)}</span>
+            </div>
+            <div class="faq-answer">
+              <p>${escapeHtml(q.answer)}</p>
+              <div class="faq-meta">
+                Posé par ${escapeHtml(q.name || 'Anonyme')} -
+                Répondu le ${new Date(q.answeredAt).toLocaleDateString('fr-FR')}
+              </div>
+            </div>
+          </li>
+        `).join('') + '</ul>';
+      } catch (error) {
+        console.error('Error loading FAQ:', error);
+      }
+    }
+
+    function toggleFAQ(element) {
+      element.parentElement.classList.toggle('open');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Submit form
+    document.getElementById('questionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Envoi en cours...';
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        question: document.getElementById('question').value
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/questions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('questionForm').reset();
+          setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+          }, 5000);
+        } else {
+          alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+        }
+      } catch (error) {
+        console.error('Error submitting question:', error);
+        alert('Erreur de connexion. Veuillez réessayer.');
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Envoyer ma question';
+    });
+
+    // Load FAQ on page load
+    loadFAQ();
+  </script>
+</body>
+</html>

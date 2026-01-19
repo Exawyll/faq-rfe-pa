@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "questions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "answeredAt", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}

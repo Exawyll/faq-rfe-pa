@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - FAQ Facturation Électronique</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .back-link {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    /* Login Form */
+    #loginSection {
+      max-width: 400px;
+      margin: 50px auto;
+    }
+
+    #loginSection h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .btn-sm {
+      padding: 8px 15px;
+      font-size: 0.9rem;
+    }
+
+    /* Admin Panel */
+    #adminSection {
+      display: none;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 2rem;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: #e9ecef;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .tab.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .question-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .question-card.pending {
+      border-left: 4px solid #ffc107;
+    }
+
+    .question-card.answered {
+      border-left: 4px solid #28a745;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .question-meta {
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .question-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-answered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      color: #333;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .answer-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .answer-section h4 {
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+
+    .answer-form textarea {
+      min-height: 100px;
+      margin-bottom: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    .error {
+      color: #dc3545;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .stats { flex-direction: column; }
+      .question-header { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Administration FAQ</h1>
+      <a href="/" class="back-link">Retour au site public</a>
+    </header>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="card">
+      <h2>Connexion Admin</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" required placeholder="Entrez le mot de passe admin">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Se connecter</button>
+        <p class="error" id="loginError" style="display: none;">Mot de passe incorrect</p>
+      </form>
+    </div>
+
+    <!-- Admin Section -->
+    <div id="adminSection">
+      <div class="stats">
+        <div class="stat-card">
+          <h3 id="pendingCount">0</h3>
+          <p>En attente</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="answeredCount">0</h3>
+          <p>Répondues</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="filterQuestions('all')">Toutes</button>
+          <button class="tab" onclick="filterQuestions('pending')">En attente</button>
+          <button class="tab" onclick="filterQuestions('answered')">Répondues</button>
+        </div>
+
+        <div id="questionsList">
+          <div class="empty-state">Chargement...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '';
+    let adminPassword = '';
+    let allQuestions = [];
+    let currentFilter = 'all';
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        if (response.ok) {
+          adminPassword = password;
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('adminSection').style.display = 'block';
+          loadQuestions();
+        } else {
+          document.getElementById('loginError').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Erreur de connexion');
+      }
+    });
+
+    // Load questions
+    async function loadQuestions() {
+      try {
+        const response = await fetch(`${API_URL}/api/admin/questions`, {
+          headers: { 'X-Admin-Password': adminPassword }
+        });
+        allQuestions = await response.json();
+        updateStats();
+        renderQuestions();
+      } catch (error) {
+        console.error('Error loading questions:', error);
+      }
+    }
+
+    function updateStats() {
+      const pending = allQuestions.filter(q => q.status === 'pending').length;
+      const answered = allQuestions.filter(q => q.status === 'answered').length;
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('answeredCount').textContent = answered;
+    }
+
+    function filterQuestions(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      renderQuestions();
+    }
+
+    function renderQuestions() {
+      let questions = allQuestions;
+      if (currentFilter !== 'all') {
+        questions = allQuestions.filter(q => q.status === currentFilter);
+      }
+
+      const container = document.getElementById('questionsList');
+
+      if (questions.length === 0) {
+        container.innerHTML = '<div class="empty-state">Aucune question</div>';
+        return;
+      }
+
+      container.innerHTML = questions.map(q => `
+        <div class="question-card ${q.status}" id="question-${q.id}">
+          <div class="question-header">
+            <div class="question-meta">
+              <strong>${escapeHtml(q.name || 'Anonyme')}</strong>
+              ${q.email ? `(${escapeHtml(q.email)})` : ''}<br>
+              ${new Date(q.createdAt).toLocaleString('fr-FR')}
+            </div>
+            <span class="question-status ${q.status === 'pending' ? 'status-pending' : 'status-answered'}">
+              ${q.status === 'pending' ? 'En attente' : 'Répondue'}
+            </span>
+          </div>
+          <div class="question-text">${escapeHtml(q.question)}</div>
+          ${q.status === 'answered' ? `
+            <div class="answer-section">
+              <h4>Réponse :</h4>
+              <p>${escapeHtml(q.answer)}</p>
+            </div>
+          ` : `
+            <div class="answer-form">
+              <textarea id="answer-${q.id}" placeholder="Écrivez votre réponse..."></textarea>
+              <div class="actions">
+                <button class="btn btn-success btn-sm" onclick="submitAnswer('${q.id}')">
+                  Publier la réponse
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')">
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          `}
+        </div>
+      `).join('');
+    }
+
+    async function submitAnswer(id) {
+      const answer = document.getElementById(`answer-${id}`).value;
+      if (!answer.trim()) {
+        alert('Veuillez écrire une réponse');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/questions/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Password': adminPassword
+          },
+          body: JSON.stringify({ answer })
+        });
+
+        if (response.ok) {
+          loadQuestions();
+        } else {
+          alert('Erreur lors de l\'enregistrement');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Erreur de connexion');
+      }
+    }
+
+    async function deleteQuestion(id) {
+      if (!confirm('Supprimer cette question ?')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/questions/${id}`, {
+          method: 'DELETE',
+          headers: { 'X-Admin-Password': adminPassword }
+        });
+
+        if (response.ok) {
+          loadQuestions();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
