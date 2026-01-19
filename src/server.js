@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Firestore } = require('@google-cloud/firestore');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 const path = require('path');
 
 const app = express();
@@ -19,19 +19,14 @@ const firestore = new Firestore({
 });
 const questionsCollection = firestore.collection('questions');
 
-// Email transporter (configure with your SMTP settings)
-let transporter = null;
-if (process.env.SMTP_HOST) {
-  transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT || 587,
-    secure: false,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
+
+const APP_URL = process.env.APP_URL || 'https://faq-rfe-pa-1025620012992.europe-west1.run.app';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@faq-rfe.com';
 
 // Simple admin password (in production, use proper auth)
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
@@ -96,25 +91,36 @@ app.post('/api/questions', async (req, res) => {
 
     const docRef = await questionsCollection.add(newQuestion);
 
-    // Send email notification
-    if (transporter && process.env.ADMIN_EMAIL) {
+    // Send email notification to admin
+    if (process.env.SENDGRID_API_KEY && ADMIN_EMAIL) {
       try {
-        await transporter.sendMail({
-          from: process.env.SMTP_USER,
-          to: process.env.ADMIN_EMAIL,
-          subject: '📩 Nouvelle question FAQ - Facturation Électronique',
+        await sgMail.send({
+          to: ADMIN_EMAIL,
+          from: FROM_EMAIL,
+          subject: 'Nouvelle question FAQ - Facturation Électronique',
           html: `
-            <h2>Nouvelle question reçue</h2>
-            <p><strong>De:</strong> ${name || 'Anonyme'} ${email ? `(${email})` : ''}</p>
-            <p><strong>Question:</strong></p>
-            <blockquote style="background: #f9f9f9; padding: 15px; border-left: 3px solid #2196F3;">
-              ${question}
-            </blockquote>
-            <p><a href="${process.env.APP_URL || 'http://localhost:8080'}/admin.html">Répondre à la question</a></p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Nouvelle Question</h1>
+              </div>
+              <div style="padding: 30px; background: #f9f9f9;">
+                <p><strong>De:</strong> ${name || 'Anonyme'} ${email ? `(<a href="mailto:${email}">${email}</a>)` : ''}</p>
+                <p><strong>Question:</strong></p>
+                <blockquote style="background: white; padding: 20px; border-left: 4px solid #667eea; margin: 15px 0;">
+                  ${question}
+                </blockquote>
+                <p style="text-align: center; margin-top: 30px;">
+                  <a href="${APP_URL}/admin.html" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+                    Répondre à la question
+                  </a>
+                </p>
+              </div>
+            </div>
           `
         });
+        console.log('Admin notification email sent');
       } catch (emailError) {
-        console.error('Error sending email:', emailError);
+        console.error('Error sending admin email:', emailError);
       }
     }
 
@@ -161,11 +167,60 @@ app.put('/api/admin/questions/:id', adminAuth, async (req, res) => {
       return res.status(400).json({ error: 'La réponse est requise' });
     }
 
+    // Get the question first to retrieve user email
+    const questionDoc = await questionsCollection.doc(id).get();
+    const questionData = questionDoc.data();
+
     await questionsCollection.doc(id).update({
       answer: answer.trim(),
       status: 'answered',
       answeredAt: new Date().toISOString()
     });
+
+    // Send email notification to the user who asked the question
+    if (process.env.SENDGRID_API_KEY && questionData.email) {
+      try {
+        await sgMail.send({
+          to: questionData.email,
+          from: FROM_EMAIL,
+          subject: 'Votre question a reçu une réponse - FAQ Facturation Électronique',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Réponse à votre question</h1>
+              </div>
+              <div style="padding: 30px; background: #f9f9f9;">
+                <p>Bonjour ${questionData.name || ''},</p>
+                <p>Votre question a reçu une réponse !</p>
+
+                <p><strong>Votre question :</strong></p>
+                <blockquote style="background: white; padding: 20px; border-left: 4px solid #667eea; margin: 15px 0;">
+                  ${questionData.question}
+                </blockquote>
+
+                <p><strong>Réponse :</strong></p>
+                <blockquote style="background: white; padding: 20px; border-left: 4px solid #28a745; margin: 15px 0;">
+                  ${answer}
+                </blockquote>
+
+                <p style="text-align: center; margin-top: 30px;">
+                  <a href="${APP_URL}" style="background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+                    Voir toutes les FAQ
+                  </a>
+                </p>
+
+                <p style="color: #888; font-size: 12px; margin-top: 30px; text-align: center;">
+                  FAQ Facturation Électronique & Plateformes Agréées
+                </p>
+              </div>
+            </div>
+          `
+        });
+        console.log('User notification email sent to:', questionData.email);
+      } catch (emailError) {
+        console.error('Error sending user email:', emailError);
+      }
+    }
 
     res.json({ message: 'Réponse enregistrée avec succès' });
   } catch (error) {
