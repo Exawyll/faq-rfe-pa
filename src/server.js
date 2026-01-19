@@ -1,23 +1,136 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { Firestore } = require('@google-cloud/firestore');
 const sgMail = require('@sendgrid/mail');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Initialize Firestore
-const firestore = new Firestore({
-  projectId: process.env.GCP_PROJECT_ID,
-});
-const questionsCollection = firestore.collection('questions');
+// ========== DATABASE ABSTRACTION ==========
+
+let questionsCollection;
+
+if (USE_MOCK_DB) {
+  // In-memory mock database for local development
+  console.log('📦 Using in-memory mock database');
+
+  let mockData = [
+    {
+      id: 'mock-1',
+      question: 'Qu\'est-ce que la facturation électronique ?',
+      name: 'Jean Dupont',
+      email: 'jean@example.com',
+      status: 'answered',
+      answer: 'La **facturation électronique** est un processus qui permet d\'émettre, transmettre et recevoir des factures dans un format électronique structuré.\n\n### Avantages :\n- Réduction des coûts\n- Gain de temps\n- Meilleure traçabilité\n- Impact environnemental réduit',
+      createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
+      answeredAt: new Date(Date.now() - 86400000 * 5).toISOString()
+    },
+    {
+      id: 'mock-2',
+      question: 'Quand la facturation électronique sera-t-elle obligatoire ?',
+      name: 'Marie Martin',
+      email: 'marie@example.com',
+      status: 'answered',
+      answer: 'Le calendrier de déploiement est le suivant :\n\n1. **1er septembre 2026** : Obligation de réception pour toutes les entreprises\n2. **1er septembre 2026** : Obligation d\'émission pour les grandes entreprises\n3. **1er septembre 2027** : Obligation d\'émission pour les ETI et PME',
+      createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+      answeredAt: new Date(Date.now() - 86400000 * 3).toISOString()
+    },
+    {
+      id: 'mock-3',
+      question: 'Qu\'est-ce qu\'une Plateforme de Dématérialisation Partenaire (PDP) ?',
+      name: 'Anonyme',
+      email: null,
+      status: 'pending',
+      answer: null,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      answeredAt: null
+    }
+  ];
+
+  // Mock collection that mimics Firestore API
+  questionsCollection = {
+    async add(data) {
+      const id = 'mock-' + Date.now();
+      mockData.push({ id, ...data });
+      return { id };
+    },
+    doc(id) {
+      return {
+        async get() {
+          const item = mockData.find(q => q.id === id);
+          return {
+            data: () => item,
+            exists: !!item
+          };
+        },
+        async update(data) {
+          const index = mockData.findIndex(q => q.id === id);
+          if (index !== -1) {
+            mockData[index] = { ...mockData[index], ...data };
+          }
+        },
+        async delete() {
+          mockData = mockData.filter(q => q.id !== id);
+        }
+      };
+    },
+    where(field, op, value) {
+      return {
+        orderBy(orderField, direction) {
+          return {
+            async get() {
+              let filtered = mockData.filter(q => q[field] === value);
+              filtered.sort((a, b) => {
+                if (direction === 'desc') {
+                  return new Date(b[orderField]) - new Date(a[orderField]);
+                }
+                return new Date(a[orderField]) - new Date(b[orderField]);
+              });
+              return {
+                docs: filtered.map(q => ({
+                  id: q.id,
+                  data: () => ({ ...q })
+                }))
+              };
+            }
+          };
+        }
+      };
+    },
+    orderBy(field, direction) {
+      return {
+        async get() {
+          const sorted = [...mockData].sort((a, b) => {
+            if (direction === 'desc') {
+              return new Date(b[field]) - new Date(a[field]);
+            }
+            return new Date(a[field]) - new Date(b[field]);
+          });
+          return {
+            docs: sorted.map(q => ({
+              id: q.id,
+              data: () => ({ ...q })
+            }))
+          };
+        }
+      };
+    }
+  };
+} else {
+  // Real Firestore
+  const { Firestore } = require('@google-cloud/firestore');
+  const firestore = new Firestore({
+    projectId: process.env.GCP_PROJECT_ID,
+  });
+  questionsCollection = firestore.collection('questions');
+}
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -327,4 +440,8 @@ app.listen(PORT, () => {
   console.log(`🚀 FAQ Server running on port ${PORT}`);
   console.log(`📖 Public FAQ: http://localhost:${PORT}`);
   console.log(`🔐 Admin panel: http://localhost:${PORT}/admin.html`);
+  if (USE_MOCK_DB) {
+    console.log(`\n⚠️  Mode développement : base de données en mémoire (USE_MOCK_DB=true)`);
+    console.log(`   Les données seront perdues au redémarrage du serveur.`);
+  }
 });

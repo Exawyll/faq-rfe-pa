@@ -387,6 +387,106 @@
       font-size: 0.95rem;
     }
 
+    /* Markdown content styles */
+    .markdown-content {
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .markdown-content p {
+      margin-bottom: 0.8em;
+    }
+
+    .markdown-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-content ul,
+    .markdown-content ol {
+      margin: 0.8em 0;
+      padding-left: 1.5em;
+    }
+
+    .markdown-content li {
+      margin-bottom: 0.4em;
+    }
+
+    .markdown-content code {
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9em;
+    }
+
+    .markdown-content pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1em 0;
+    }
+
+    .markdown-content pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .markdown-content blockquote {
+      border-left: 4px solid #667eea;
+      padding-left: 15px;
+      margin: 1em 0;
+      color: #666;
+      font-style: italic;
+    }
+
+    .markdown-content strong {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .markdown-content a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .markdown-content a:hover {
+      text-decoration: underline;
+    }
+
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    .markdown-content th,
+    .markdown-content td {
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .markdown-content th {
+      background: #f5f7fa;
+      font-weight: 600;
+    }
+
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3,
+    .markdown-content h4 {
+      margin: 1em 0 0.5em 0;
+      color: #333;
+    }
+
+    .markdown-content h1 { font-size: 1.4em; }
+    .markdown-content h2 { font-size: 1.2em; }
+    .markdown-content h3 { font-size: 1.1em; }
+    .markdown-content h4 { font-size: 1em; }
+
     /* Info box */
     .info-box {
       background: #e8f4fd;
@@ -402,7 +502,264 @@
       display: block;
       margin-bottom: 5px;
     }
+
+    /* Similar questions suggestions */
+    .similar-questions {
+      margin-top: 10px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .similar-questions.visible {
+      display: block;
+    }
+
+    .similar-questions-header {
+      font-size: 0.85rem;
+      color: #667eea;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .similar-questions-header svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .similar-question-item {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .similar-question-item:hover {
+      background: #e8f4fd;
+      border-color: #667eea;
+    }
+
+    .similar-question-text {
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .similar-question-meta {
+      font-size: 0.75rem;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .similar-question-status {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .similar-question-status.answered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .similar-question-status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .similar-question-score {
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .similar-questions-hint {
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    /* Modal for expanded view */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.visible .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .modal-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .modal-body {
+      padding: 30px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-question {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.4;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .modal-answer {
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .modal-answer .markdown-content {
+      font-size: 1.05rem;
+    }
+
+    .modal-answer .markdown-content p {
+      margin-bottom: 1em;
+    }
+
+    .modal-answer .markdown-content ul,
+    .modal-answer .markdown-content ol {
+      margin: 1em 0;
+      padding-left: 1.8em;
+    }
+
+    .modal-answer .markdown-content li {
+      margin-bottom: 0.5em;
+    }
+
+    .modal-answer .markdown-content pre {
+      font-size: 0.95rem;
+    }
+
+    .modal-meta {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .modal-pending {
+      background: #fff3cd;
+      color: #856404;
+      padding: 20px;
+      border-radius: 8px;
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* Expand button */
+    .btn-expand-question {
+      background: none;
+      border: 1px solid #ddd;
+      color: #667eea;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-expand-question:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    @media (max-width: 600px) {
+      .modal-content {
+        width: 95%;
+        max-height: 95vh;
+        border-radius: 12px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-question {
+        font-size: 1.1rem;
+      }
+    }
   </style>
+  <!-- Markdown libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <!-- Fuzzy search library -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
 </head>
 <body>
   <!-- Header -->
@@ -442,7 +799,17 @@
         </div>
         <div class="form-group">
           <label for="question">Votre question *</label>
-          <textarea id="question" name="question" placeholder="Posez votre question sur la facturation électronique, les plateformes agréées, la réforme 2026..." required></textarea>
+          <textarea id="question" name="question" placeholder="Posez votre question sur la facturation électronique, les plateformes agréées, la réforme 2026..." required oninput="searchSimilarQuestions()"></textarea>
+          <div class="similar-questions" id="similarQuestions">
+            <div class="similar-questions-header">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Questions similaires existantes
+            </div>
+            <div id="similarQuestionsList"></div>
+            <div class="similar-questions-hint">Cliquez sur une question pour voir sa réponse</div>
+          </div>
         </div>
         <button type="submit" class="btn" id="submitBtn">Envoyer ma question</button>
       </form>
@@ -496,6 +863,8 @@
     let allQuestions = [];
     let currentStatusFilter = 'all';
     let currentSearchTerm = '';
+    let fuse = null;
+    let searchDebounceTimer = null;
 
     // Load all questions (answered + pending for public view)
     async function loadFAQ() {
@@ -506,6 +875,7 @@
         allQuestions = questions;
         updateCounts();
         renderQuestions();
+        initializeFuse(); // Initialize fuzzy search after loading questions
       } catch (error) {
         console.error('Error loading FAQ:', error);
       }
@@ -565,6 +935,13 @@
 
       const faqList = document.getElementById('faqList');
 
+      // Save currently open questions before re-rendering
+      const openQuestionIds = new Set();
+      document.querySelectorAll('.faq-item.open').forEach(item => {
+        const id = item.getAttribute('data-question-id');
+        if (id) openQuestionIds.add(id);
+      });
+
       if (questions.length === 0) {
         let emptyMsg = 'Aucune question pour le moment';
         if (currentSearchTerm) {
@@ -586,7 +963,7 @@
       }
 
       faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => `
-        <li class="faq-item ${q.status}">
+        <li class="faq-item ${q.status}" data-question-id="${q.id}">
           <div class="faq-question" onclick="toggleFAQ(this)">
             <span class="faq-question-text">${escapeHtml(q.question)}</span>
             <span class="faq-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
@@ -596,19 +973,31 @@
           </div>
           <div class="faq-answer ${q.status === 'pending' ? 'pending-msg' : ''}">
             ${q.status === 'answered'
-              ? `<p>${escapeHtml(q.answer)}</p>
+              ? `<div class="markdown-content">${renderMarkdown(q.answer)}</div>
                  <div class="faq-meta">
                    Posé par ${escapeHtml(q.name || 'Anonyme')} -
                    Répondu le ${new Date(q.answeredAt).toLocaleDateString('fr-FR')}
+                   <button class="btn-expand-question" onclick="event.stopPropagation(); openQuestionModal('${q.id}')">
+                     Agrandir
+                   </button>
                  </div>`
               : `<p>Cette question est en cours de traitement. La réponse apparaîtra ici automatiquement.</p>
                  <div class="faq-meta">
                    Posé par ${escapeHtml(q.name || 'Anonyme')} le ${new Date(q.createdAt).toLocaleDateString('fr-FR')}
+                   <button class="btn-expand-question" onclick="event.stopPropagation(); openQuestionModal('${q.id}')">
+                     Agrandir
+                   </button>
                  </div>`
             }
           </div>
         </li>
       `).join('') + '</ul>';
+
+      // Restore previously open questions
+      openQuestionIds.forEach(id => {
+        const item = document.querySelector(`[data-question-id="${id}"]`);
+        if (item) item.classList.add('open');
+      });
     }
 
     function toggleFAQ(element) {
@@ -620,6 +1009,103 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Render Markdown to safe HTML
+    function renderMarkdown(text) {
+      if (!text) return '';
+      // Configure marked for safe rendering
+      marked.setOptions({
+        breaks: true,  // Convert \n to <br>
+        gfm: true      // GitHub Flavored Markdown
+      });
+      // Parse markdown and sanitize output
+      const html = marked.parse(text);
+      return DOMPurify.sanitize(html);
+    }
+
+    // Initialize Fuse.js for fuzzy search
+    function initializeFuse() {
+      const fuseOptions = {
+        keys: ['question'],
+        threshold: 0.4,      // 0 = exact match, 1 = match anything
+        distance: 100,       // How far to search for a match
+        includeScore: true,
+        minMatchCharLength: 3
+      };
+      fuse = new Fuse(allQuestions, fuseOptions);
+    }
+
+    // Search for similar questions with debounce
+    function searchSimilarQuestions() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        performSimilarSearch();
+      }, 300);
+    }
+
+    // Perform the actual search
+    function performSimilarSearch() {
+      const questionInput = document.getElementById('question').value.trim();
+      const container = document.getElementById('similarQuestions');
+      const list = document.getElementById('similarQuestionsList');
+
+      // Hide if input is too short
+      if (questionInput.length < 10 || !fuse) {
+        container.classList.remove('visible');
+        return;
+      }
+
+      // Search with Fuse.js
+      const results = fuse.search(questionInput, { limit: 3 });
+
+      // Filter results with good scores (lower is better)
+      const goodResults = results.filter(r => r.score < 0.5);
+
+      if (goodResults.length === 0) {
+        container.classList.remove('visible');
+        return;
+      }
+
+      // Render suggestions
+      list.innerHTML = goodResults.map(result => {
+        const q = result.item;
+        const similarity = Math.round((1 - result.score) * 100);
+        return `
+          <div class="similar-question-item" onclick="showSimilarQuestion('${q.id}')">
+            <div class="similar-question-text">${escapeHtml(q.question)}</div>
+            <div class="similar-question-meta">
+              <span class="similar-question-status ${q.status}">${q.status === 'answered' ? 'Répondue' : 'En attente'}</span>
+              <span class="similar-question-score">${similarity}% similaire</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.classList.add('visible');
+    }
+
+    // Show similar question in the FAQ list
+    function showSimilarQuestion(questionId) {
+      // Switch to the right panel on mobile
+      const faqItem = document.getElementById('faq-' + questionId);
+
+      // Set filter to show all questions
+      setStatusFilter('all');
+
+      // Wait for render, then scroll and open
+      setTimeout(() => {
+        const item = document.querySelector(`[data-question-id="${questionId}"]`);
+        if (item) {
+          item.classList.add('open');
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight briefly
+          item.style.boxShadow = '0 0 0 3px #667eea';
+          setTimeout(() => {
+            item.style.boxShadow = '';
+          }, 2000);
+        }
+      }, 100);
     }
 
     // Submit form
@@ -646,6 +1132,7 @@
         if (response.ok) {
           document.getElementById('successMessage').style.display = 'block';
           document.getElementById('questionForm').reset();
+          document.getElementById('similarQuestions').classList.remove('visible');
 
           // Reload FAQ to show the new pending question
           setTimeout(() => {
@@ -673,6 +1160,77 @@
 
     // Auto-refresh every 10 seconds
     setInterval(loadFAQ, 10000);
+
+    // ========== MODAL FUNCTIONS ==========
+
+    function openQuestionModal(questionId) {
+      const question = allQuestions.find(q => q.id === questionId);
+      if (!question) return;
+
+      const modal = document.getElementById('questionModal');
+      const modalQuestion = document.getElementById('modalQuestion');
+      const modalAnswer = document.getElementById('modalAnswer');
+      const modalMeta = document.getElementById('modalMeta');
+
+      modalQuestion.textContent = question.question;
+
+      if (question.status === 'answered') {
+        modalAnswer.innerHTML = `<div class="markdown-content">${renderMarkdown(question.answer)}</div>`;
+        modalMeta.innerHTML = `
+          Posé par <strong>${escapeHtml(question.name || 'Anonyme')}</strong> -
+          Répondu le ${new Date(question.answeredAt).toLocaleDateString('fr-FR')}
+        `;
+      } else {
+        modalAnswer.innerHTML = `
+          <div class="modal-pending">
+            Cette question est en cours de traitement.<br>
+            La réponse apparaîtra bientôt.
+          </div>
+        `;
+        modalMeta.innerHTML = `
+          Posé par <strong>${escapeHtml(question.name || 'Anonyme')}</strong>
+          le ${new Date(question.createdAt).toLocaleDateString('fr-FR')}
+        `;
+      }
+
+      modal.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeQuestionModal() {
+      const modal = document.getElementById('questionModal');
+      modal.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeQuestionModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeQuestionModal();
+      }
+    });
   </script>
+
+  <!-- Question Modal -->
+  <div class="modal-overlay" id="questionModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Question & Réponse</h3>
+        <button class="modal-close" onclick="closeQuestionModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-question" id="modalQuestion"></div>
+        <div class="modal-answer" id="modalAnswer"></div>
+        <div class="modal-meta" id="modalMeta"></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
