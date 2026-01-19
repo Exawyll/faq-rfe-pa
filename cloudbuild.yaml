@@ -22,10 +22,16 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'GCP_PROJECT_ID=$PROJECT_ID'
+      - 'GCP_PROJECT_ID=$PROJECT_ID,ADMIN_PASSWORD=${_ADMIN_PASSWORD},SENDGRID_API_KEY=${_SENDGRID_API_KEY},ADMIN_EMAIL=${_ADMIN_EMAIL},FROM_EMAIL=${_FROM_EMAIL}'
 
 images:
   - 'gcr.io/$PROJECT_ID/faq-rfe-pa:$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _ADMIN_PASSWORD: 'changeme'
+  _SENDGRID_API_KEY: ''
+  _ADMIN_EMAIL: ''
+  _FROM_EMAIL: ''
