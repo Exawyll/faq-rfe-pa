@@ -343,13 +343,63 @@
       padding: 0 20px;
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.3s, padding 0.3s;
+      transition: max-height 0.4s ease-out, padding 0.3s;
       background: #f8f9fa;
     }
 
     .faq-item.open .faq-answer {
       padding: 20px;
-      max-height: 500px;
+      max-height: 600px;
+    }
+
+    /* Truncated answer styles */
+    .answer-truncated {
+      position: relative;
+    }
+
+    .answer-truncated .markdown-content::after {
+      content: "...";
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .read-more-container {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed #ddd;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .read-more-hint {
+      font-size: 0.85rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    .btn-read-more {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-read-more:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-read-more svg {
+      width: 16px;
+      height: 16px;
     }
 
     .faq-answer p {
@@ -611,9 +661,9 @@
 
     .modal-content {
       background: white;
-      width: 90%;
-      max-width: 800px;
-      max-height: 90vh;
+      width: 95%;
+      max-width: 1000px;
+      max-height: 95vh;
       border-radius: 16px;
       overflow: hidden;
       display: flex;
@@ -660,47 +710,67 @@
     }
 
     .modal-body {
-      padding: 30px;
+      padding: 40px 50px;
       overflow-y: auto;
       flex: 1;
     }
 
     .modal-question {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 600;
       color: #333;
-      margin-bottom: 20px;
-      line-height: 1.4;
-      padding-bottom: 20px;
+      margin-bottom: 25px;
+      line-height: 1.5;
+      padding-bottom: 25px;
       border-bottom: 2px solid #e0e0e0;
     }
 
     .modal-answer {
-      font-size: 1.05rem;
-      line-height: 1.8;
+      font-size: 1.1rem;
+      line-height: 1.9;
     }
 
     .modal-answer .markdown-content {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
     }
 
     .modal-answer .markdown-content p {
-      margin-bottom: 1em;
+      margin-bottom: 1.2em;
     }
 
     .modal-answer .markdown-content ul,
     .modal-answer .markdown-content ol {
-      margin: 1em 0;
-      padding-left: 1.8em;
+      margin: 1.2em 0;
+      padding-left: 2em;
     }
 
     .modal-answer .markdown-content li {
-      margin-bottom: 0.5em;
+      margin-bottom: 0.6em;
     }
 
     .modal-answer .markdown-content pre {
-      font-size: 0.95rem;
+      font-size: 1rem;
+      padding: 20px;
     }
+
+    .modal-answer .markdown-content table {
+      font-size: 1rem;
+    }
+
+    .modal-answer .markdown-content th,
+    .modal-answer .markdown-content td {
+      padding: 12px 16px;
+    }
+
+    .modal-answer .markdown-content blockquote {
+      padding: 15px 20px;
+      margin: 1.2em 0;
+      font-size: 1.05rem;
+    }
+
+    .modal-answer .markdown-content h1 { font-size: 1.5em; }
+    .modal-answer .markdown-content h2 { font-size: 1.3em; }
+    .modal-answer .markdown-content h3 { font-size: 1.2em; }
 
     .modal-meta {
       margin-top: 25px;
@@ -719,39 +789,36 @@
       text-align: center;
     }
 
-    /* Expand button */
-    .btn-expand-question {
-      background: none;
-      border: 1px solid #ddd;
-      color: #667eea;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      margin-left: 8px;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-expand-question:hover {
-      background: #667eea;
-      color: white;
-      border-color: #667eea;
-    }
-
     @media (max-width: 600px) {
       .modal-content {
-        width: 95%;
-        max-height: 95vh;
-        border-radius: 12px;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        height: 100vh;
       }
 
       .modal-body {
-        padding: 20px;
+        padding: 25px 20px;
       }
 
       .modal-question {
-        font-size: 1.1rem;
+        font-size: 1.15rem;
+      }
+
+      .modal-answer {
+        font-size: 1rem;
+      }
+
+      .read-more-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .btn-read-more {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -962,7 +1029,11 @@
         return;
       }
 
-      faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => `
+      faqList.innerHTML = '<ul class="faq-list">' + questions.map(q => {
+        const isLong = isAnswerLong(q.answer);
+        const displayAnswer = isLong ? truncateMarkdown(q.answer, TRUNCATE_LIMIT) : q.answer;
+
+        return `
         <li class="faq-item ${q.status}" data-question-id="${q.id}">
           <div class="faq-question" onclick="toggleFAQ(this)">
             <span class="faq-question-text">${escapeHtml(q.question)}</span>
@@ -973,25 +1044,31 @@
           </div>
           <div class="faq-answer ${q.status === 'pending' ? 'pending-msg' : ''}">
             ${q.status === 'answered'
-              ? `<div class="markdown-content">${renderMarkdown(q.answer)}</div>
+              ? `<div class="${isLong ? 'answer-truncated' : ''}">
+                   <div class="markdown-content">${renderMarkdown(displayAnswer)}</div>
+                 </div>
+                 ${isLong ? `
+                 <div class="read-more-container">
+                   <span class="read-more-hint">La réponse complète est plus longue...</span>
+                   <button class="btn-read-more" onclick="event.stopPropagation(); openQuestionModal('${q.id}')">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                     </svg>
+                     Lire la réponse complète
+                   </button>
+                 </div>` : ''}
                  <div class="faq-meta">
                    Posé par ${escapeHtml(q.name || 'Anonyme')} -
                    Répondu le ${new Date(q.answeredAt).toLocaleDateString('fr-FR')}
-                   <button class="btn-expand-question" onclick="event.stopPropagation(); openQuestionModal('${q.id}')">
-                     Agrandir
-                   </button>
                  </div>`
               : `<p>Cette question est en cours de traitement. La réponse apparaîtra ici automatiquement.</p>
                  <div class="faq-meta">
                    Posé par ${escapeHtml(q.name || 'Anonyme')} le ${new Date(q.createdAt).toLocaleDateString('fr-FR')}
-                   <button class="btn-expand-question" onclick="event.stopPropagation(); openQuestionModal('${q.id}')">
-                     Agrandir
-                   </button>
                  </div>`
             }
           </div>
         </li>
-      `).join('') + '</ul>';
+      `}).join('') + '</ul>';
 
       // Restore previously open questions
       openQuestionIds.forEach(id => {
@@ -1022,6 +1099,38 @@
       // Parse markdown and sanitize output
       const html = marked.parse(text);
       return DOMPurify.sanitize(html);
+    }
+
+    // Check if answer is long (over character limit)
+    const TRUNCATE_LIMIT = 350;
+
+    function isAnswerLong(answer) {
+      if (!answer) return false;
+      return answer.length > TRUNCATE_LIMIT;
+    }
+
+    // Truncate markdown text while keeping it valid
+    function truncateMarkdown(text, limit) {
+      if (!text || text.length <= limit) return text;
+      // Find a good break point (end of sentence or paragraph)
+      let truncated = text.substring(0, limit);
+      // Try to break at end of paragraph
+      const lastParagraph = truncated.lastIndexOf('\n\n');
+      if (lastParagraph > limit * 0.6) {
+        truncated = truncated.substring(0, lastParagraph);
+      } else {
+        // Try to break at end of sentence
+        const lastSentence = Math.max(
+          truncated.lastIndexOf('. '),
+          truncated.lastIndexOf('.\n'),
+          truncated.lastIndexOf('? '),
+          truncated.lastIndexOf('! ')
+        );
+        if (lastSentence > limit * 0.5) {
+          truncated = truncated.substring(0, lastSentence + 1);
+        }
+      }
+      return truncated;
     }
 
     // Initialize Fuse.js for fuzzy search
