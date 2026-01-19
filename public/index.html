@@ -183,11 +183,61 @@
       50% { opacity: 0.5; }
     }
 
+    /* Search & Controls */
+    .search-box {
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .expand-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-expand {
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-expand:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
     /* Tabs */
     .tabs {
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     .tab {
@@ -408,16 +458,26 @@
         </span>
       </h2>
 
-      <div class="tabs">
-        <button class="tab active" onclick="filterQuestions('all')" data-filter="all">
-          Toutes<span class="count" id="countAll">0</span>
-        </button>
-        <button class="tab" onclick="filterQuestions('answered')" data-filter="answered">
-          Répondues<span class="count" id="countAnswered">0</span>
-        </button>
-        <button class="tab" onclick="filterQuestions('pending')" data-filter="pending">
-          En attente<span class="count" id="countPending">0</span>
-        </button>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher dans les questions..." oninput="applyFilters()">
+      </div>
+
+      <div class="controls-row">
+        <div class="tabs">
+          <button class="tab active" onclick="setStatusFilter('all')" data-filter="all">
+            Toutes<span class="count" id="countAll">0</span>
+          </button>
+          <button class="tab" onclick="setStatusFilter('answered')" data-filter="answered">
+            Répondues<span class="count" id="countAnswered">0</span>
+          </button>
+          <button class="tab" onclick="setStatusFilter('pending')" data-filter="pending">
+            En attente<span class="count" id="countPending">0</span>
+          </button>
+        </div>
+        <div class="expand-buttons">
+          <button class="btn-expand" onclick="expandAll()">Tout déplier</button>
+          <button class="btn-expand" onclick="collapseAll()">Tout replier</button>
+        </div>
       </div>
 
       <div id="faqList">
@@ -434,7 +494,8 @@
   <script>
     const API_URL = '';
     let allQuestions = [];
-    let currentFilter = 'all';
+    let currentStatusFilter = 'all';
+    let currentSearchTerm = '';
 
     // Load all questions (answered + pending for public view)
     async function loadFAQ() {
@@ -459,29 +520,66 @@
       document.getElementById('countPending').textContent = pending;
     }
 
-    function filterQuestions(filter) {
-      currentFilter = filter;
+    function setStatusFilter(filter) {
+      currentStatusFilter = filter;
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
       renderQuestions();
     }
 
-    function renderQuestions() {
+    function applyFilters() {
+      currentSearchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderQuestions();
+    }
+
+    function getFilteredQuestions() {
       let questions = allQuestions;
 
-      if (currentFilter !== 'all') {
-        questions = allQuestions.filter(q => q.status === currentFilter);
+      // Filter by status
+      if (currentStatusFilter !== 'all') {
+        questions = questions.filter(q => q.status === currentStatusFilter);
       }
+
+      // Filter by search term
+      if (currentSearchTerm) {
+        questions = questions.filter(q =>
+          q.question.toLowerCase().includes(currentSearchTerm) ||
+          (q.answer && q.answer.toLowerCase().includes(currentSearchTerm)) ||
+          (q.name && q.name.toLowerCase().includes(currentSearchTerm))
+        );
+      }
+
+      return questions;
+    }
+
+    function expandAll() {
+      document.querySelectorAll('.faq-item').forEach(item => item.classList.add('open'));
+    }
+
+    function collapseAll() {
+      document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('open'));
+    }
+
+    function renderQuestions() {
+      let questions = getFilteredQuestions();
 
       const faqList = document.getElementById('faqList');
 
       if (questions.length === 0) {
+        let emptyMsg = 'Aucune question pour le moment';
+        if (currentSearchTerm) {
+          emptyMsg = 'Aucun résultat pour cette recherche';
+        } else if (currentStatusFilter === 'pending') {
+          emptyMsg = 'Aucune question en attente';
+        } else if (currentStatusFilter === 'answered') {
+          emptyMsg = 'Aucune question répondue';
+        }
         faqList.innerHTML = `
           <div class="empty-state">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p>${currentFilter === 'pending' ? 'Aucune question en attente' : currentFilter === 'answered' ? 'Aucune question répondue' : 'Aucune question pour le moment'}</p>
+            <p>${emptyMsg}</p>
           </div>
         `;
         return;
@@ -552,7 +650,7 @@
           // Reload FAQ to show the new pending question
           setTimeout(() => {
             loadFAQ();
-            filterQuestions('pending');
+            setStatusFilter('pending');
           }, 500);
 
           setTimeout(() => {
